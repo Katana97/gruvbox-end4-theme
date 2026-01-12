@@ -37,6 +37,7 @@ cp "$THEME_DIR/files/quickshell/Appearance.qml" ~/.config/quickshell/ii/modules/
 cp "$THEME_DIR/files/quickshell/bar/Resources.qml" ~/.config/quickshell/ii/modules/ii/bar/
 cp "$THEME_DIR/files/quickshell/bar/Resource.qml" ~/.config/quickshell/ii/modules/ii/bar/
 cp "$THEME_DIR/files/quickshell/bar/BatteryIndicator.qml" ~/.config/quickshell/ii/modules/ii/bar/
+cp "$THEME_DIR/files/quickshell/bar/Media.qml" ~/.config/quickshell/ii/modules/ii/bar/
 
 mkdir -p ~/.config/hypr/custom
 cp "$THEME_DIR/files/hypr/general.conf" ~/.config/hypr/custom/
