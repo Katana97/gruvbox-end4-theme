@@ -28,6 +28,10 @@ echo "Backup saved to: $BACKUP_DIR"
 echo ""
 
 echo "Installing theme files..."
+# Install cursor theme
+echo "Installing cursor theme..."
+mkdir -p ~/.icons
+cp -r "$THEME_DIR/cursors/oreo_gruvbox_grey_cursors" ~/.icons/
 
 mkdir -p ~/.config/matugen/templates
 cp "$THEME_DIR/files/matugen/colors.json" ~/.config/matugen/templates/

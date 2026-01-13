@@ -124,3 +124,9 @@ MIT License - See [LICENSE](LICENSE)
 ---
 
 **Enjoy your cozy, retro Gruvbox desktop!** 🍂
+
+## 🖱️ Cursor Theme
+
+Includes custom Oreo cursors in Gruvbox medium grey (#928374) for a cohesive look.
+
+The installer automatically installs the cursor theme to `~/.icons/`. The cursor is configured in Hyprland to survive updates.
