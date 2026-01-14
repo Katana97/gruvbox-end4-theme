@@ -64,14 +64,54 @@ Item {
                 }
             }
         }
-        StyledText {
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignVCenter
-            font.pixelSize: Appearance.font.pixelSize.small
-            horizontalAlignment: Text.AlignHCenter
-            elide: Text.ElideRight
-            color: Appearance.colors.colOnLayer1
-            text: `${cleanedTitle}${activePlayer?.trackArtist ? ' • ' + activePlayer.trackArtist : ''}`
+        Item {
+            Layout.preferredWidth: 180
+            Layout.maximumWidth: 180
+            Layout.fillHeight: true
+            clip: true
+            
+            Row {
+                id: scrollContainer
+                height: parent.height
+                spacing: 40
+                
+                Repeater {
+                    model: scrollText.shouldScroll ? 2 : 1
+                    
+                    StyledText {
+                        anchors.verticalCenter: parent.verticalCenter
+                        font.pixelSize: Appearance.font.pixelSize.small
+                        color: Appearance.colors.colOnLayer1
+                        text: `${cleanedTitle}${activePlayer?.trackArtist ? ' • ' + activePlayer.trackArtist : ''}`
+                    }
+                }
+                
+                SequentialAnimation on x {
+                    running: scrollText.shouldScroll && activePlayer?.isPlaying
+                    loops: Animation.Infinite
+                    
+                    NumberAnimation {
+                        from: 0
+                        to: -(scrollText.implicitWidth + 40)
+                        duration: 8000
+                        easing.type: Easing.Linear
+                    }
+                    
+                    PropertyAction { 
+                        target: scrollContainer
+                        property: "x"
+                        value: 0
+                    }
+                }
+            }
+            
+            StyledText {
+                id: scrollText
+                visible: false
+                font.pixelSize: Appearance.font.pixelSize.small
+                text: `${cleanedTitle}${activePlayer?.trackArtist ? ' • ' + activePlayer.trackArtist : ''}`
+                property bool shouldScroll: implicitWidth > 180
+            }
         }
     }
 }
