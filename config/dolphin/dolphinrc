@@ -1,0 +1,30 @@
+MenuBar=Disabled
+
+[Colors]
+ColorScheme=GruvboxPlusDark
+
+[DetailsMode]
+PreviewSize=32
+
+[General]
+GlobalViewProps=false
+ShowFullPath=true
+ShowStatusBar=FullWidth
+Version=202
+
+[IconsMode]
+UseSystemFont=false
+ViewFont=Roboto Condensed,11,-1,5,500,0,0,0,0,0,0,0,0,0,0,1,Medium
+
+[KFileDialog Settings]
+Places Icons Auto-resize=true
+Places Icons Static Size=16
+
+[MainWindow]
+MenuBar=Disabled
+
+[PlacesPanel]
+IconSize=-1
+
+[PreviewSettings]
+Plugins=ffmpegthumbnailer,appimagethumbnail,audiothumbnail,blenderthumbnail,comicbookthumbnail,cursorthumbnail,djvuthumbnail,ebookthumbnail,exrthumbnail,directorythumbnail,fontthumbnail,imagethumbnail,jpegthumbnail,kraorathumbnail,windowsexethumbnail,windowsimagethumbnail,gsf-office,mobithumbnail,opendocumentthumbnail,gsthumbnail,rawthumbnail,svgthumbnail,ffmpegthumbs
