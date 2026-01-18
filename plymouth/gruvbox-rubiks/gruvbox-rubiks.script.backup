@@ -1,0 +1,63 @@
+# Gruvbox Rubiks Cube Plymouth Theme Script
+
+# Set up the background (Gruvbox dark background colour)
+Window.SetBackgroundTopColor(0.156, 0.156, 0.156);    # #282828
+Window.SetBackgroundBottomColor(0.156, 0.156, 0.156); # #282828
+
+# Load all animation frames
+frame_count = 36;
+for (i = 0; i < frame_count; i++) {
+    frame_filename = "frame_" + String(i).PadZeros(3) + ".png";
+    frames[i] = Image(frame_filename);
+}
+
+# Create sprite for animation
+animation_sprite = Sprite();
+animation_sprite.SetPosition(Window.GetWidth() / 2 - frames[0].GetWidth() / 2,
+                             Window.GetHeight() / 2 - frames[0].GetHeight() / 2,
+                             10000);
+
+# Animation variables
+current_frame = 0;
+frame_delay = 0.05; # 50ms between frames for smooth animation
+time_since_last_frame = 0;
+
+# Main animation loop
+fun refresh_callback() {
+    time_since_last_frame += 1;
+    
+    if (time_since_last_frame >= frame_delay * 50) {
+        current_frame = (current_frame + 1) % frame_count;
+        animation_sprite.SetImage(frames[current_frame]);
+        time_since_last_frame = 0;
+    }
+}
+
+Plymouth.SetRefreshFunction(refresh_callback);
+
+# Progress bar (optional - Gruvbox colours)
+progress_box.image = Image("progress_box.png");
+progress_box.sprite = Sprite(progress_box.image);
+progress_box.x = Window.GetWidth() / 2 - progress_box.image.GetWidth() / 2;
+progress_box.y = Window.GetHeight() * 0.75;
+progress_box.sprite.SetPosition(progress_box.x, progress_box.y, 0);
+
+fun progress_callback(duration, progress) {
+    if (progress_bar.sprite) progress_bar.sprite.SetOpacity(0);
+}
+
+Plymouth.SetBootProgressFunction(progress_callback);
+
+# Message display (for password prompts, etc.)
+message_sprite = Sprite();
+message_sprite.SetPosition(Window.GetWidth() / 2, Window.GetHeight() * 0.9, 10000);
+
+fun message_callback(text) {
+    my_image = Image.Text(text, 0.867, 0.627, 0.133, 1, "Sans 12"); # Gruvbox yellow
+    message_sprite.SetImage(my_image);
+    message_sprite.SetPosition(Window.GetWidth() / 2 - my_image.GetWidth() / 2,
+                               Window.GetHeight() * 0.9,
+                               10000);
+}
+
+Plymouth.SetMessageFunction(message_callback);

@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Gruvbox Rubiks Cube
+Description=Animated Gruvbox-themed Rubik's Cube boot splash
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/gruvbox-rubiks
+ScriptFile=/usr/share/plymouth/themes/gruvbox-rubiks/gruvbox-rubiks.script
