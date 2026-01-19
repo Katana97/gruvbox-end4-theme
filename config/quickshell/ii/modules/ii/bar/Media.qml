@@ -13,13 +13,10 @@ Item {
     readonly property MprisPlayer activePlayer: MprisController.activePlayer
     readonly property string cleanedTitle: StringUtils.cleanMusicTitle(activePlayer?.trackTitle) || Translation.tr("No media")
     Layout.fillHeight: true
-    // CRITICAL: Don't use Layout.fillWidth - it pushes other items out
     Layout.fillWidth: false
     
-    // FIX 1: Dynamic width with maximum constraint to prevent overlap with swap icon
     Layout.preferredWidth: {
-        if (!activePlayer || !activePlayer.trackTitle) return 0;
-        // Use actual text width but cap at 200px to ensure Resources (swap icon) stays visible
+        if (!activePlayer || !activePlayer.trackTitle) return 80;
         return Math.min(scrollText.implicitWidth + 24, 200);
     }
     Layout.maximumWidth: 200
@@ -27,8 +24,7 @@ Item {
     implicitWidth: Layout.preferredWidth
     implicitHeight: Appearance.sizes.barHeight
     
-    // Only show when there's actual media playing
-    visible: activePlayer && activePlayer.trackTitle !== ""
+    visible: true
     
     Timer {
         running: activePlayer?.playbackState == MprisPlaybackState.Playing
@@ -39,6 +35,7 @@ Item {
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.MiddleButton | Qt.BackButton | Qt.ForwardButton | Qt.RightButton | Qt.LeftButton
+        hoverEnabled: false
         onPressed: (event) => {
             if (event.button === Qt.MiddleButton) {
                 activePlayer.togglePlaying();
@@ -65,6 +62,7 @@ Item {
             implicitSize: 20
             colPrimary: "#d65d0e"
             enableAnimation: false
+            visible: activePlayer && activePlayer.trackTitle !== ""
             Item {
                 anchors.centerIn: parent
                 width: mediaCircProg.implicitSize
@@ -80,9 +78,8 @@ Item {
             }
         }
         Item {
-            // FIX 1 continued: Use flexible width that respects the container
-            Layout.preferredWidth: Math.min(scrollText.implicitWidth, 170)
-            Layout.maximumWidth: 170  // Maximum to leave space for Resources icons
+            Layout.preferredWidth: Math.min(scrollText.implicitWidth + 16, 170)
+            Layout.maximumWidth: 170
             Layout.fillHeight: true
             clip: true
             
@@ -91,17 +88,7 @@ Item {
                 height: parent.height
                 spacing: 40
                 
-                // FIX 2: Proper x positioning for short text
-                x: {
-                    if (!scrollText.shouldScroll) {
-                        // Text fits - add left padding
-                        return 8;
-                    } else {
-                        // Text scrolls - use animation value
-                        return scrollText.shouldScroll && activePlayer?.isPlaying ? scrollX : 8;
-                    }
-                }
-                
+                x: scrollText.shouldScroll ? scrollX : 8
                 property real scrollX: 8
                 
                 Repeater {
@@ -114,31 +101,6 @@ Item {
                         text: `${cleanedTitle}${activePlayer?.trackArtist ? ' • ' + activePlayer.trackArtist : ''}`
                     }
                 }
-                
-                SequentialAnimation on scrollX {
-                    running: scrollText.shouldScroll && activePlayer?.isPlaying
-                    loops: Animation.Infinite
-                    
-                    // Pause at start with proper padding visible
-                    PauseAnimation { duration: 1500 }
-                    
-                    NumberAnimation {
-                        from: 8
-                        to: -(scrollText.implicitWidth + 40 - 8)
-                        duration: 8000
-                        easing.type: Easing.Linear
-                    }
-                    
-                    // Pause at end
-                    PauseAnimation { duration: 1500 }
-                    
-                    // Quick reset
-                    PropertyAction { 
-                        target: scrollContainer
-                        property: "scrollX"
-                        value: 8
-                    }
-                }
             }
             
             StyledText {
@@ -146,8 +108,47 @@ Item {
                 visible: false
                 font.pixelSize: Appearance.font.pixelSize.small
                 text: `${cleanedTitle}${activePlayer?.trackArtist ? ' • ' + activePlayer.trackArtist : ''}`
-                // Check against the constrained width
                 property bool shouldScroll: implicitWidth > 170
+            }
+            
+            // FIX: Timer-based smooth scrolling (frame-by-frame)
+            Timer {
+                id: scrollTimer
+                interval: 20  // 50fps - smooth and not too CPU intensive
+                repeat: true
+                running: scrollText.shouldScroll && 
+                         activePlayer !== null && 
+                         activePlayer.playbackState === MprisPlaybackState.Playing &&
+                         activePlayer.trackTitle !== null &&
+                         activePlayer.trackTitle !== ""
+                
+                property real pixelsPerFrame: 0.4  // Speed: adjust this for faster/slower
+                
+                onTriggered: {
+                    // Move text left
+                    scrollContainer.scrollX -= pixelsPerFrame;
+                    
+                    // Seamless reset when first copy fully scrolled
+                    var resetPoint = -(scrollText.implicitWidth + 40);
+                    if (scrollContainer.scrollX <= resetPoint) {
+                        scrollContainer.scrollX = 8;
+                    }
+                }
+                
+                onRunningChanged: {
+                    if (running) {
+                        // Start from beginning when animation starts
+                        scrollContainer.scrollX = 8;
+                    }
+                }
+            }
+            
+            // Reset position when text changes
+            Connections {
+                target: root
+                function onCleanedTitleChanged() {
+                    scrollContainer.scrollX = 8;
+                }
             }
         }
     }
